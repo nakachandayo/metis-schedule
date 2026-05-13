@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Tauri app
+        run: npm run tauri build --bundles msi,nsis
+
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${tag#v}" >> $GITHUB_OUTPUT
+        env:
+          tag: ${{ github.ref_name }}
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: MetisSchedule ${{ github.ref_name }}
+          body: |
+            ## 安装说明
+
+            下载以下文件之一：
+
+            - `MetisSchedule_x.x.x_x64-setup.exe` - NSIS 安装包（推荐）
+            - `MetisSchedule_x.x.x_x64_en-US.msi` - MSI 安装包
+
+            或直接下载 `MetisSchedule.exe` 独立运行。
+
+            ## 主要更新
+
+            请查看 [Releases](https://github.com/anomalyco/MetisSchedule/releases) 查看完整更新日志。
+          files: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*-setup.exe
+            src-tauri/target/release/MetisSchedule.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
