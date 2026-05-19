@@ -43,9 +43,11 @@ jobs:
 
       - name: Check formatting
         run: cargo fmt --check
+        working-directory: src-tauri
 
       - name: Run clippy
         run: cargo clippy -- -D warnings
+        working-directory: src-tauri
 
   build-tauri:
     name: Build Tauri

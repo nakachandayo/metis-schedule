@@ -33,6 +33,7 @@ jobs:
 
       - name: Build Tauri app
         run: npm run tauri build --bundles msi,nsis
+        working-directory: src-tauri
 
       - name: Get version from tag
         id: version
