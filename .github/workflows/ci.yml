@@ -71,7 +71,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-        working-directory: src-tauri
 
       - name: Build Tauri app
         run: npm run tauri build --bundles msi,nsis
