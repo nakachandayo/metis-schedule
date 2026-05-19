@@ -73,7 +73,7 @@ jobs:
         run: npm ci
 
       - name: Build Tauri app
-        run: npm run tauri build --bundles msi,nsis
+        run: npm run tauri build
         working-directory: src-tauri
 
       - name: Upload build artifacts
